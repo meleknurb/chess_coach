@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chess Coach{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><a href="{% url 'home' %}">Chess Coach</a></div>
+        <ul>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'users:dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'users:profile' %}">Profile</a></li>
+                <li><a href="{% url 'users:settings' %}">Settings</a></li>
+                <li><a href="{% url 'users:logout' %}">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'users:register' %}">Register</a></li>
+                <li><a href="{% url 'users:login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Chess Coach. All rights reserved.</p>
+    </footer>
+</body>
+</html>
