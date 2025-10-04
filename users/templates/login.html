@@ -1,7 +1,29 @@
-<h2>Login</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
-<a href="{% url 'users:register' %}">Register</a>
+{% load static %}
+
+{% block title %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper"> 
+    <div class="auth-container">
+        <h2 class="form-title">Sign In</h2> 
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-fields">
+                {{ form.as_p }}
+            </div>
+            
+            <button type="submit" class="auth-button">Sign In</button>
+        </form>
+        
+        <p class="auth-switch">Don’t have an account? 
+            <a href="{% url 'users:register' %}" class="highlight-link">Sign Up</a>
+        </p>
+        <a href="{% url 'home' %}" class="back-to-home">Back to Home</a>
+    </div>
+</div>
+{% endblock %}
+
