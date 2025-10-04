@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Analysis & AI Chess Coach{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="hero-content">
+        <h1>The Ultimate AI Chess Analysis and Coach</h1>
+        <p class="subtitle">
+        Get instant, <strong>pro-level</strong> analysis and personalized coaching tailored to your Chess.com games. It's high-end strategy, <strong>zero cost.</strong>
+        </p>
+        {% if request.user.is_authenticated %}
+            <a class="btn primary-btn" href="{% url 'users:dashboard' %}">
+                <i class="fas fa-arrow-right"></i> Get Started Now
+            </a>
+        {% else %}
+            <a class="btn primary-btn" href="{% url 'users:register' %}">
+                <i class="fas fa-arrow-right"></i> Get Started Now
+            </a>
+        {% endif %}
+        <a class="btn secondary-btn" href="#features">Discover Features</a>
+
+    </div>
+    <div class="hero-image">
+        <i class="fas fa-chess-knight fa-7x"></i> 
+    </div>
+</section>
+
+<section id="features" class="features-section">
+    <h2>Transform Your Chess Journey</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <i class="fas fa-chart-line fa-3x icon-analytics"></i>
+            <h3>Free In-Depth Analysis</h3>
+            <p>Sync all your rated games via the Chess.com API. See the 'Why' behind your Blunders and Mistakes, and maximize learning from every single match.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-robot fa-3x icon-coach"></i>
+            <h3>Your Personal LLM Chess Coach</h3>
+            <p>Chat with <strong>Chess Coach</strong> about opening theory, middlegame tactics, and endgame techniques anytime. Get instant, interactive feedback tailored to your skill level.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-sync-alt fa-3x icon-sync"></i>
+            <h3>Seamless User Sync</h3>
+            <p>No complicated uploads. Just enter your Chess.com username upon registration or in your profile and watch your entire game history instantly populate your dashboard.</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <h2>Don't Pay Premium to Improve.</h2>
+    <p>Join thousands of players who stopped just playing and started learning with <strong>Chess Coach</strong>.</p>
+
+    {% if request.user.is_authenticated %}
+        <a class="btn primary-btn large-btn" href="{% url 'users:dashboard' %}">
+            <i class="fas fa-graduation-cap"></i> Start Your Analysis and Coaching
+        </a>
+    {% else %}
+        <a class="btn primary-btn large-btn" href="{% url 'users:register' %}">
+            <i class="fas fa-graduation-cap"></i> Start Your Analysis and Coaching
+        </a>
+    {% endif %}
+
+</section>
+{% endblock %}
