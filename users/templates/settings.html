@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Settings | Chess Coach{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <h2>Account Settings</h2>
+    <p>Here you will be able to update your profile, change password, etc.</p>
+    <p>(We’ll add forms here later!)</p>
+</div>
+{% endblock %}
