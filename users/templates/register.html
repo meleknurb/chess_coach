@@ -1,7 +1,40 @@
-<h2>Register</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
-<a href="{% url 'users:login' %}">Login</a>
+{% load static %}
+{% load widget_tweaks %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper"> 
+    <div class="auth-container">
+        <h2 class="form-title">Sign Up</h2> 
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-fields">
+                
+                {% for field in form %}
+                    <p>
+                        {{ field.label_tag }} 
+                        
+                        {% if field.name == 'username' %}
+                            {{ field|attr:"placeholder:Your Chess.com Username" }}
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    </p>
+                {% endfor %}
+                {{ form.non_field_errors }}
+                
+            </div>
+            
+            <button type="submit" class="auth-button">Sign Up</button>
+        </form>
+        
+        <p class="auth-switch">Already have an account? 
+            <a href="{% url 'users:login' %}" class="highlight-link">Sign In</a>
+        </p>
+        <a href="{% url 'home' %}" class="back-to-home">Back to Home</a>
+    </div>
+</div>
+{% endblock %}
