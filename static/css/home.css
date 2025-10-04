@@ -1,0 +1,178 @@
+/* home.css */
+
+/* Hero Bölümü Stilleri - SON HALE GETİRİLDİ */
+.hero-section {
+    /* Daha yumuşak, hafifçe açık mavi tonları */
+    background: linear-gradient(135deg, #46607a, #3c526a); 
+    
+    /* Ana metin (h1) için saf beyaz renk */
+    color: #ffffff; 
+    
+    /* Dikey padding ve yükseklik ayarı */
+    padding: 6rem 10%; 
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 500px; 
+    gap: 40px;
+}
+
+.hero-content {
+    max-width: 650px; 
+    text-align: left;
+    /* Yazıları yukarı kaydırmak için dikey hizalama ayarlandı */
+    align-self: flex-start; 
+    padding-top: 20px; 
+}
+
+.hero-content h1 {
+    /* Daha kısa ve net başlık için ideal boyut */
+    font-size: 3.5rem; 
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+.hero-content .highlight {
+    /* Vurgu kelimesi turuncu kalıyor */
+    color: #e67e22;
+}
+
+.hero-content .subtitle {
+    font-size: 1.1rem; 
+    margin-bottom: 25px; 
+    /* Alt yazıyı soluk olmayan bir griye ayarladık */
+    color: #ecf0f1;
+}
+
+/* YENİ EKLENDİ: Alt başlık (subtitle) içindeki kalın metinleri vurgular */
+.hero-content .subtitle strong,
+.hero-content .subtitle b {
+    color: #ffffff; /* Kalın kelimeler saf beyaz görünür */
+    font-weight: 700;
+}
+
+
+.hero-image {
+    color: #ff9933;
+    padding: 20px;
+    align-self: flex-start; 
+    padding-top: 20px;
+}
+
+.hero-image .fa-chess-knight {
+    opacity: 1.0;
+}
+
+/* Genel Buton Stilleri */
+.btn {
+    text-decoration: none;
+    padding: 14px 35px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+    margin-top: 20px;
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+.primary-btn {
+    background: #e67e22;
+    color: #fff;
+    border: 2px solid #e67e22;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.primary-btn:hover {
+    background: #d35400;
+    border-color: #d35400;
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background: transparent;
+    /* İkinci butonun metnini saf beyaz yaptık */
+    color: #ffffff; 
+    border: 2px solid #95a5a6; 
+}
+
+.secondary-btn:hover {
+    background: rgba(189, 195, 199, 0.15);
+    color: #fff;
+}
+
+
+/* Özellikler Bölümü Stilleri */
+.features-section {
+    padding: 80px 10%;
+    text-align: center;
+    /* Yumuşak, hafif gri arka plan */
+    background-color: #f5f5f5;
+}
+
+.features-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.feature-card {
+    background-color: #fcfcfc;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card i {
+    color: #e67e22;
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+/* CTA Bölümü Stilleri */
+.cta-section {
+    /* Navbar ve Footer ile uyumlu koyu mavi */
+    background: linear-gradient(135deg, #46607a, #3c526a); 
+    color: #ecf0f1;
+    padding: 100px 10%;
+    text-align: center;
+}
+
+.cta-section h2 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+}
+
+.large-btn {
+    font-size: 1.2rem;
+    padding: 18px 45px;
+}
