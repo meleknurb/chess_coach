@@ -30,7 +30,7 @@ def login(request):
             user = authenticate(request, username=username, password=password)
             if user:
                 auth_login(request, user)
-                return redirect('home')
+                return redirect('users:dashboard')
             else:
                 messages.error(request, 'Invalid username or password.')
     else:
@@ -41,9 +41,20 @@ def login(request):
 @login_required
 def logout(request):
     auth_logout(request)
-    return redirect('users:login')
+    return redirect('home')
 
-# Home view
 @login_required
-def home(request):
-    return render(request, 'home.html', {'user': request.user})
+def profile(request):
+    return render(request, 'profile.html', {'user': request.user})
+
+@login_required
+def settings(request):
+    return render(request, 'settings.html', {'user': request.user})
+
+@login_required
+def dashboard(request):
+    context = {
+        'username': request.user.username,
+        'user_rating': 1850,
+    }
+    return render(request, 'dashboard.html', context)
