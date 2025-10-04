@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | Chess Coach{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="dashboard-header">
+        <div class="user-info">
+            <h1>Welcome back, <span class="highlight-username">ChessMaster3000</span></h1>
+        </div>
+
+        <div class="action-buttons">
+            <a href="#" class="btn primary-btn secondary-btn coach-btn">
+                <i class="fas fa-robot"></i> Chat with Coach
+            </a>
+        </div>
+    </div>
+
+    <div class="game-history-section">
+        <h2>Your Recent Games <i class="fas fa-sync-alt sync-icon"></i></h2>
+        
+        <div class="filter-bar">
+            <input type="text" placeholder="Search by Opponent or Date..." class="search-input">
+        </div>
+
+        <div class="game-table-container">
+            <table class="game-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Opponent</th>
+                        <th>Result</th>
+                        <th>Error Count</th>
+                        <th>Accuracy</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-10-01</td>
+                        <td>HikaruFan_x</td>
+                        <td class="result-win">Win</td>
+                        <td>2</td>
+                        <td class="accuracy-high">94.5%</td>
+                        <td><a href="#" class="btn small-btn ">Analyze</a></td>
+                    </tr>
+                    <tr>
+                        <td>2025-09-30</td>
+                        <td>TaimanovLover</td>
+                        <td class="result-loss">Loss</td>
+                        <td>5</td>
+                        <td class="accuracy-medium">82.1%</td>
+                        <td><a href="#" class="btn small-btn ">Analyze</a></td>
+                    </tr>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
