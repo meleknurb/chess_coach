@@ -1,0 +1,109 @@
+/* auth.css - SON HALİ: Merkezlenmiş Beyaz Kutu Form */
+
+/* 1. SAYFA ORTALAMA (body'yi veya ana content alanını hedefler) */
+/* base.html'i kullanıyorsanız, buradaki stiller auth-page-wrapper'a uygulanır. */
+/* Kullanmıyorsanız, bu stiller body'ye uygulanır. */
+body, .auth-page-wrapper {
+    margin: 0;
+    display: flex;
+    justify-content: center; /* Yatayda ortala */
+    align-items: center;    /* Dikeyde ortala */
+    min-height: 100vh;
+    overflow: auto;
+    
+    /* Hero Section ile uyumlu koyu arka plan */
+    background: linear-gradient(135deg, #46607a, #3c526a); 
+    font-family: 'Roboto', sans-serif; /* Veya kullandığınız ana font */
+}
+
+/* 2. FORM KUTUSU (Beyaz Kutu) */
+.auth-container {
+    background-color: #ffffff; /* Saf beyaz kutu */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Yumuşak gölge */
+    width: 90%;
+    max-width: 600px;
+    min-width: 400px;
+    text-align: center;
+    box-sizing: border-box;
+    color: #2c3e50; /* Genel metin rengi koyu */
+}
+
+.form-title {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+/* 3. INPUT ALANLARI */
+.form-fields p {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-fields label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 1.1em;
+}
+
+.form-fields input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #000000; /* Yumuşak sınır */
+    border-radius: 6px;
+    background-color: #fcfcfc;
+    color: #2c3e50;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+/* 4. BUTON STİLİ */
+.auth-button {
+    background-color: #ff9933; /* Parlak turuncu vurgu */
+    color: white;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    width: 100%;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.auth-button:hover {
+    background-color: #e67e22; /* Daha koyu turuncu hover */
+    transform: translateY(-2px);
+}
+
+/* 5. ALT VE DÖNÜŞ LİNKLERİ */
+.auth-switch {
+    margin-top: 25px;
+    font-size: 1em;
+    color: #555;
+}
+
+.auth-switch a, .back-to-home {
+    color: #ff9933; /* Parlak turuncu vurgu */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+    display: inline-block; /* Back to Home için */
+}
+
+.auth-switch a:hover, .back-to-home:hover {
+    color: #e67e22;
+    text-decoration: underline;
+}
+
+.back-to-home {
+    margin-top: 20px;
+    font-size: 1em;
+}
