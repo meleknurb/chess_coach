@@ -1,16 +1,11 @@
 /* dashboard.css */
 
-/* Renk Paleti Düzeltmeleri */
-/* #ecf0f1 (Açık Gri) yerine daha parlak #ffffff (Tam Beyaz) kullanıldı */
-/* Yumuşak ayırıcılar için opaklık artırıldı */
 
-
-/* 1. Sayfa Arka Planı ve Genel Metin Rengi */
+/* 1. Page Background and General Text Color */
 .dashboard-page {
-    /* Login ve Hero ile uyumlu koyu arka plan */
     background: linear-gradient(135deg, #3c526a, #46607a); 
-    color: #ffffff; /* GÜNCELLENDİ: Açık gri yerine TAM BEYAZ metin */
-    min-height: calc(100vh - 80px); /* Navbar yüksekliği çıkarıldı */
+    color: #ffffff; 
+    min-height: calc(100vh - 80px);
     padding: 20px 10%;
 }
 
@@ -19,8 +14,8 @@
     justify-content: space-between;
     align-items: center;
     padding-bottom: 30px;
-    border-bottom: 1px solid #5a7590; /* GÜNCELLENDİ: Daha belirgin ayırıcı */
-    margin-bottom: 40px;
+    border-bottom: 1px solid #5a7590;
+    margin-bottom: 20px;
 }
 
 .user-info h1 {
@@ -30,21 +25,16 @@
 }
 
 .user-info .highlight-username {
-    color: #ff9933; /* Parlak turuncu kullanıcı adı */
+    color: #ff9933; 
 }
 
-.rating-info {
-    font-size: 1.1rem;
-    color: #bdc3c7; /* Yumuşak gri rating metni */
-    margin-top: 5px;
-}
 
-/* 2. Eylem Butonları (Sadece Coach Kaldı) */
+/* 2. Action Buttons */
 .action-buttons a {
-    margin: 0; /* Tek buton olduğu için gereksiz boşluk kaldırıldı */
+    margin: 0; 
 }
 
-/* Genel Buton Stili (Tüm butonlar ve tabloda Analyze için) */
+/*  General Button Style */
 .btn {
     display: inline-block;
     padding: 12px 25px;
@@ -56,56 +46,62 @@
     text-align: center;
 }
 
-/* Birincil Buton (Şimdi Ana Coach Butonumuz) */
 .primary-btn {
-    background-color: #ff9933; /* Parlak Turuncu */
+    background-color: #ff9933; 
     color: #ffffff;
     border: 2px solid #ff9933;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Gölge belirginleştirildi */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .primary-btn:hover {
-    background-color: #e67e22; /* Koyu Turuncu Hover */
+    background-color: #e67e22; 
     border-color: #e67e22;
     transform: translateY(-2px);
 }
 
+.history-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 25px; 
+}
 
-/* 3. Oyun Geçmişi Bölümü */
+
+/* 3. Game History Section */
 .game-history-section h2 {
     font-size: 1.8rem;
-    margin-bottom: 25px;
+    margin-bottom: 0px;
     color: #ffffff;
 }
 
-/* Filtre Alanı */
 .search-input {
     width: 300px;
     padding: 10px 15px;
-    border: 1px solid #000; /* GÜNCELLENDİ: Daha belirgin input sınırı */
+    border: 1px solid #000; 
     border-radius: 6px;
-    background-color: #dfdfdf; /* GÜNCELLENDİ: Input arka planı koyulaştırıldı */
+    background-color: #dfdfdf;
     color: #333333;
-    margin-bottom: 25px;
+    margin-bottom: 0px;
     transition: all 0.2s ease;
 }
 
 .search-input::placeholder {
-    color: #888888; /* Soft gri placeholder */
+    color: #888888;
 }
 
 .search-input:focus {
-    outline: none; /* Varsayılan mavi outline kaldırıldı */
-    border: 1px solid #000; /* Dashboard’daki turuncu border */
+    outline: none; 
+    border: 1px solid #000; 
 }
 
 
-/* 4. Oyun Tablosu */
+/* 4. Game Table */
 .game-table-container {
-    background-color: #f8f8f8; /* Tabloyu daha koyu bir kutuya aldık */
+    background-color: #f8f8f8;
     border-radius: 10px;
     overflow-x: auto;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Gölge belirginleştirildi */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); 
+    margin-bottom: 40px;
 }
 
 .game-table {
@@ -114,7 +110,7 @@
 }
 
 .game-table th {
-    background-color: #d5d5d5; /* GÜNCELLENDİ: Başlık daha da koyu yapıldı */
+    background-color: #d5d5d5; 
     color: #333333;
     padding: 15px;
     text-align: left;
@@ -123,29 +119,26 @@
 }
 
 .game-table td {
-    background-color: #dcdcdc; /* Satırlar soft beyaz */
+    background-color: #dcdcdc; 
     padding: 15px;
-    border-bottom: 1px solid #3e4455; /* GÜNCELLENDİ: Satır ayırıcı belirginleştirildi */
+    border-bottom: 1px solid #3e4455; 
     vertical-align: middle;
-    color: #333333; /* GÜNCELLENDİ: Tüm hücre metni tam beyaz */
+    color: #000; 
 }
 
 .game-table tbody tr:hover {
-    background-color: #eaeaea; /* Hover efekti belirginleştirildi */
+    background-color: #eaeaea; 
     cursor: pointer;
 }
 
-/* 5. Tablo Veri Vurguları */
-/* Renkler olduğu gibi bırakıldı, zaten parlaklar */
-.result-win { color: #2ecc71 !important; font-weight: bold; } /* Yeşil kazanma */
-.result-loss { color: #e74c3c !important; font-weight: bold; } /* Kırmızı kaybetme */
+.result-win { color: #2ecc71 !important; font-weight: bold; }
+.result-loss { color: #e74c3c !important; font-weight: bold; }
 .accuracy-high { color: #3498db; }
 .accuracy-medium { color: #f1c40f; }
 
-/* Küçük buton (Tablo Analyze Butonu) */
 .game-table .small-btn {
-    background-color: #ff9933; /* Turuncu arka plan */
-    color: #ffffff; /* Beyaz metin */
+    background-color: #ff9933; 
+    color: #ffffff; 
     border: 1px solid #ff9933;
     border-radius: 6px;
     padding: 8px 14px;
@@ -155,7 +148,47 @@
 }
 
 .game-table .small-btn:hover {
-    background-color: #e67e22; /* Hover koyu turuncu */
+    background-color: #e67e22; 
     border-color: #e67e22;
     transform: translateY(-1px);
+}
+
+/* 5. Player Details */
+.player-details-cell {
+    padding: 8px 15px; 
+    line-height: 1.2;
+    text-align: left;
+}
+
+.player-line {
+    display: block; 
+    font-size: 0.9em; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    padding: 2px 0; 
+}
+
+.color-indicator {
+    display: inline-block;
+    width: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin-right: 5px;
+    padding: 1px 0;
+    font-size: 0.9em;
+    border-radius: 3px;
+    
+}
+
+.white-player .color-indicator {
+    color: #000; 
+    background-color: #f0d9b5;
+    border: 1px solid #333333;
+}
+
+.black-player .color-indicator {
+    color: #ffffff; 
+    background-color: #000; 
+    border: 1px solid #000;
 }
