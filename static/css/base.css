@@ -1,10 +1,11 @@
 /* base.css */
 
-/* Genel Ayarlar ve Font */
+/* General Style Settings */
+
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f0f0; /* Açık arka planı koruduk */
+    background-color: #f0f0f0; 
     color: #1a1a1a;
 }
 
@@ -13,13 +14,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #34495e; /* Navbar'ı 2c3e50'den biraz daha belirgin bir koyu maviye çevirdik */
+    background-color: #34495e;
     padding: 1rem 3rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Gölgeyi belirginleştirdik */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .navbar .logo a {
-    color: #ff9933; /* Turuncu/Altın sarısı vurgu */
+    color: #ff9933;
     text-decoration: none;
     font-size: 1.5rem;
     font-weight: 700;
@@ -37,28 +38,28 @@ body {
 }
 
 .navbar ul li a {
-    color: #ecf0f1; /* Açık Gri */
+    color: #ecf0f1; 
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
 }
 
 .navbar ul li a:hover {
-    color: #e67e22; /* Vurgu Rengi */
+    color: #e67e22; 
 }
 
-/* Ana İçerik Alanı */
+/* Main Content */
 main {
-    min-height: calc(100vh - 150px); /* Footer'ı hesaba katmak için güncelledim */
+    min-height: calc(100vh - 120px);
     padding: 0;
 }
 
-/* Footer (Yeni Eklendi) */
+/* Footer */
 .footer {
-    background-color: #34495e; /* Navbar ile uyumlu olacak şekilde koyu mavi */
+    background-color: #34495e;
     color: #bdc3c7;
     text-align: center;
-    padding: 1.1rem; /* Hafif artırdık */
+    padding: 0.3rem; 
     font-size: 0.9rem;
     display: flex;
     justify-content: center;
