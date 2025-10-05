@@ -1,3 +1,5 @@
+<!-- dashboard.html -->
+
 {% extends "base.html" %}
 {% load static %}
 
@@ -11,7 +13,7 @@
 <div class="dashboard-page">
     <div class="dashboard-header">
         <div class="user-info">
-            <h1>Welcome back, <span class="highlight-username">ChessMaster3000</span></h1>
+            <h1>Welcome, <span class="highlight-username">{{ current_username }}</span></h1>
         </div>
 
         <div class="action-buttons">
@@ -22,10 +24,12 @@
     </div>
 
     <div class="game-history-section">
-        <h2>Your Recent Games <i class="fas fa-sync-alt sync-icon"></i></h2>
+        <div class="history-header">
+            <h2>Last Games</h2>
         
         <div class="filter-bar">
             <input type="text" placeholder="Search by Opponent or Date..." class="search-input">
+        </div>
         </div>
 
         <div class="game-table-container">
@@ -33,33 +37,55 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Opponent</th>
+                        <th>Game Type</th>
+                        <th>Players</th>
                         <th>Result</th>
-                        <th>Error Count</th>
+                        <th>Moves</th>
                         <th>Accuracy</th>
-                        <th>View</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for game in games %}
                     <tr>
-                        <td>2025-10-01</td>
-                        <td>HikaruFan_x</td>
-                        <td class="result-win">Win</td>
-                        <td>2</td>
-                        <td class="accuracy-high">94.5%</td>
-                        <td><a href="#" class="btn small-btn ">Analyze</a></td>
+                        <td>{{ game.date }}</td>
+                        <td>{{ game.time_control }}</td>
+
+                        <td class="player-details-cell">
+                            <div class="player-line white-player">
+                                <span class="color-indicator"></span>
+                                <span>{{ game.player_top }}</span> </div>
+                            
+                            <div class="player-line black-player">
+                                <span class="color-indicator"></span>
+                                <span>{{ game.player_bottom }}</span> </div>
+                        </td>
+
+                        {% if "Win" in game.result_description %}
+                            <td class="result-win">{{ game.result_description }}</td>
+                        {% elif "Loss" in game.result_description %}
+                            <td class="result-loss">{{ game.result_description }}</td>
+                        {% else %}
+                            <td class="result-draw">{{ game.result_description }}</td>
+                        {% endif %}
+
+                        <td>{{ game.moves_count }}</td>
+
+                        <td>
+                            <a href="{% url 'analysis:analyze_game' %}?pgn={{ game.pgn|urlencode }}" class="btn small-btn analyze-btn" data-pgn="{{ game.pgn|escape }}">Analyze</a>
+                        </td>
                     </tr>
+                    {% empty %}
                     <tr>
-                        <td>2025-09-30</td>
-                        <td>TaimanovLover</td>
-                        <td class="result-loss">Loss</td>
-                        <td>5</td>
-                        <td class="accuracy-medium">82.1%</td>
-                        <td><a href="#" class="btn small-btn ">Analyze</a></td>
+                        <td colspan="6" class="no-games">You have no game played or the data could not be retrieved.</td>
                     </tr>
-                    </tbody>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
+        
+        {% if not games %}
+            <p class="mt-4 text-center">Your game history could not be loaded or the game could not be found.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
