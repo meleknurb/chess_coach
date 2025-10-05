@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Game Analysis | Chess Coach{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/analysis.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="analysis-page-container">
+    <h1>Game Analysis</h1>
+    
+    <div class="pgn-display-area">
+        <h2>Raw PGN Data:</h2>
+        <p class="pgn-note">
+            This is the raw data loaded from your game history. 
+            The full board and analysis will be built around this.
+        </p>
+    </div>
+
+    <div class="board-and-moves-section">
+        <div id="chess-board">
+            </div>
+        
+        <div class="move-list">
+            <h3>Moves:</h3>
+            </div>
+    </div>
+
+    <div class="engine-analysis-section">
+        <h2>Engine Insights</h2>
+        <p>This area will display move evaluations, critical mistakes, and suggested lines.</p>
+        
+        <div class="mistake-list">
+            </div>
+        
+        <div class="opening-info">
+            </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/chess_board.js' %}"></script>
+<script>
+    const pgnData = "{{ pgn|escapejs }}";
+</script>
+{% endblock %}
