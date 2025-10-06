@@ -71,12 +71,18 @@
                         <td>{{ game.moves_count }}</td>
 
                         <td>
-                            <a href="{% url 'analysis:analyze_game' %}?pgn={{ game.pgn|urlencode }}" class="btn small-btn analyze-btn" data-pgn="{{ game.pgn|escape }}">Analyze</a>
+                            <form action="{% url 'analysis:analyze_game' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="game_id" value="{{ game.pk }}">
+                                <button type="submit" class="btn small-btn analyze-btn">Analyze</button>
+                            </form>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="no-games">You have no game played or the data could not be retrieved.</td>
+                        <td colspan="6" class="no-games">
+                            You have no game played or the data could not be retrieved.
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -84,7 +90,9 @@
         </div>
         
         {% if not games %}
-            <p class="mt-4 text-center">Your game history could not be loaded or the game could not be found.</p>
+            <p class="mt-4 text-center">
+                Your game history could not be loaded or the game could not be found.
+            </p>
         {% endif %}
     </div>
 </div>
