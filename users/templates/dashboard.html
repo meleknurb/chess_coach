@@ -28,7 +28,7 @@
             <h2>Last Games</h2>
         
         <div class="filter-bar">
-            <input type="text" placeholder="Search by Opponent or Date..." class="search-input">
+            <input type="text" placeholder="Search by Opponent or Date (year-month-day)..." class="search-input">
         </div>
         </div>
 
@@ -96,4 +96,15 @@
         {% endif %}
     </div>
 </div>
+
+{% block extra_js %}
+
+<script>
+    const searchGamesUrl = "{% url 'users:search_games' %}";
+    const analyzeGameUrl = "{% url 'analysis:analyze_game' %}";
+</script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% endblock %}
+
 {% endblock %}
