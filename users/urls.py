@@ -10,4 +10,5 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('dashboard/', views.dashboard, name='dashboard'), 
+    path('search_games/', views.search_games, name='search_games'),
 ]
