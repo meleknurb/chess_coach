@@ -12,6 +12,8 @@ import datetime
 from requests.exceptions import RequestException
 import locale
 from analysis.models import ChessGame
+from django.http import JsonResponse
+
 
 # Create your views here.
 
@@ -191,3 +193,105 @@ def dashboard(request):
     }
     return render(request, 'dashboard.html', context)
 
+@login_required
+def search_games(request):
+    query = request.GET.get('query', '').strip().lower()
+    username = request.user.username.lower()
+    results = []
+    
+    db_games_qs = ChessGame.objects.filter(user=request.user)
+    
+    if query:
+        filtered_db_games_qs = db_games_qs.filter(
+            white_player__icontains=query
+        ) | db_games_qs.filter(
+            black_player__icontains=query
+        ) | db_games_qs.filter(
+            game_date__icontains=query
+        )
+        
+        for game in filtered_db_games_qs.order_by('-game_date', '-cached_at'):
+            results.append({
+                'pk': game.pk,
+                'player_top': game.white_player,
+                'player_bottom': game.black_player,
+                'time_control': game.time_control,
+                'result_description': game.result_description,
+                'moves_count': game.moves_count,
+                'date': game.game_date.strftime("%b %d, %Y"),
+            })
+
+    if not results and query:
+        print(f"Searching from API: {query}")
+        new_games_saved = 0
+        try:
+            archives_url = f'https://api.chess.com/pub/player/{username}/games/archives'
+            archives_response = requests.get(archives_url, headers=API_HEADERS, timeout=10)
+            archives_response.raise_for_status()
+            archives = archives_response.json().get('archives', [])
+
+            recent_archives = archives[-6:]
+
+            for archive_url in reversed(recent_archives):
+                games_response = requests.get(archive_url, headers=API_HEADERS, timeout=10)
+                games_response.raise_for_status()
+                api_games = games_response.json().get('games', [])
+
+                for g in api_games:
+                    pgn_text = g.get('pgn', '')
+                    opponent = g['black']['username'] if g['white']['username'].lower() == username else g['white']['username']
+                    
+                    game_date_db = datetime.datetime.fromtimestamp(g['end_time'], tz=datetime.timezone.utc).date()
+
+                    if query in opponent.lower() or query in game_date_db.strftime('%Y-%m-%d'):
+                        
+                        if ChessGame.objects.filter(user=request.user, pgn=pgn_text).exists():
+                            existing_game = ChessGame.objects.get(user=request.user, pgn=pgn_text)
+                            pk_value = existing_game.pk
+                        else:
+                            white_player_formatted = f"{g['white']['username']} ({g['white']['rating']})"
+                            black_player_formatted = f"{g['black']['username']} ({g['black']['rating']})"
+                            is_user_white = g['white']['username'].lower() == username
+                            user_result = g['white']['result'] if is_user_white else g['black']['result']
+                            
+                            if user_result == 'win':
+                                display_result = 'Win'
+                            elif user_result in ['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient', 'draw']:
+                                display_result = 'Draw'
+                            else:
+                                display_result = 'Loss'
+
+                            moves_count = get_moves_from_pgn(pgn_text)
+
+                            new_game_obj = ChessGame.objects.create(
+                                user=request.user, pgn=pgn_text, game_date=game_date_db,
+                                white_player=white_player_formatted, black_player=black_player_formatted,
+                                time_control=g.get('time_class', 'Unknown').capitalize(),
+                                result_description=display_result, moves_count=moves_count,
+                            )
+                            new_games_saved += 1
+                            pk_value = new_game_obj.pk
+
+                        results.append({
+                            'pk': pk_value,
+                            'player_top': white_player_formatted, 
+                            'player_bottom': black_player_formatted,
+                            'time_control': new_game_obj.time_control if 'new_game_obj' in locals() else existing_game.time_control,
+                            'result_description': new_game_obj.result_description if 'new_game_obj' in locals() else existing_game.result_description,
+                            'moves_count': moves_count,
+                            'date': game_date_db.strftime("%b %d, %Y"),
+                        })
+
+                        if len(results) >= 10:
+                            break
+                
+                if len(results) >= 10:
+                    break
+            
+            if new_games_saved > 0:
+                 print(f"{new_games_saved} number of games matching the search criteria were saved in the DB.")
+
+        except requests.RequestException as e:
+            print("API search failed:", e)
+
+    return JsonResponse({'games': results})
