@@ -29,6 +29,8 @@ except locale.Error:
     except locale.Error:
         pass
 
+DEFAULT_LIMIT = 5
+
 # Registration view
 def register(request):
     if request.method == 'POST':
@@ -295,3 +297,116 @@ def search_games(request):
             print("API search failed:", e)
 
     return JsonResponse({'games': results})
+
+@login_required
+def load_more_games(request):
+
+    offset = int(request.GET.get('offset', DEFAULT_LIMIT))
+    limit = DEFAULT_LIMIT
+    username = request.user.username.lower()
+    
+    db_games_qs = ChessGame.objects.filter(user=request.user).order_by('-game_date', '-cached_at')
+    games_to_return = db_games_qs[offset:offset + limit]
+    
+    games_list = []
+    
+    if games_to_return.exists():
+        print(f"Loading {games_to_return.count()} games from DB cache (offset: {offset}).")
+        for game_obj in games_to_return:
+            game_info = {
+                'pk': game_obj.pk,
+                'player_top': game_obj.white_player,
+                'player_bottom': game_obj.black_player,
+                'time_control': game_obj.time_control,
+                'result_description': game_obj.result_description,
+                'moves_count': game_obj.moves_count,
+                'date': game_obj.game_date.strftime("%b %d, %Y"),
+                'is_user_white': game_obj.white_player.lower().startswith(username),
+            }
+            games_list.append(game_info)
+        
+        has_more_db_games = db_games_qs.count() > (offset + limit)
+
+        return JsonResponse({
+            'games': games_list,
+            'loaded_from': 'db',
+            'has_more_db_games': has_more_db_games
+        })
+
+    print("DB cache is exhausted. Attempting to sync/load from API.")
+    
+    try:
+        archives_url = f'https://api.chess.com/pub/player/{username}/games/archives'
+        archives_response = requests.get(archives_url, headers=API_HEADERS, timeout=10)
+        archives_response.raise_for_status()
+        archives = archives_response.json().get('archives', [])
+        
+        if archives:
+            latest_archive_url = archives[-1]
+            games_response = requests.get(latest_archive_url, headers=API_HEADERS, timeout=10)
+            games_response.raise_for_status()
+            api_games = games_response.json().get('games', [])
+            
+            new_games_saved_count = 0
+            
+            for g in reversed(api_games):
+                pgn_text = g.get('pgn', '')
+                
+                if not ChessGame.objects.filter(user=request.user, pgn=pgn_text).exists():
+                    game_datetime = datetime.datetime.fromtimestamp(g['end_time'], tz=datetime.timezone.utc)
+                    game_date_db = game_datetime.date()
+                    white_player_formatted = f"{g['white']['username']} ({g['white']['rating']})"
+                    black_player_formatted = f"{g['black']['username']} ({g['black']['rating']})"
+                    is_user_white = g['white']['username'].lower() == username
+                    user_result = g['white']['result'] if is_user_white else g['black']['result']
+                    
+                    if user_result == 'win':
+                        display_result = 'Win'
+                    elif user_result in ['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient', 'draw']:
+                        display_result = 'Draw'
+                    else:
+                        display_result = 'Loss'
+
+                    moves_count = get_moves_from_pgn(pgn_text)
+                    new_game_obj = ChessGame.objects.create(
+                        user=request.user, pgn=pgn_text, game_date=game_date_db,
+                        white_player=white_player_formatted, black_player=black_player_formatted,
+                        time_control=g.get('time_class', 'Unknown').capitalize(),
+                        result_description=display_result, moves_count=moves_count,
+                    )
+                    
+                    games_list.append({
+                        'pk': new_game_obj.pk,
+                        'player_top': white_player_formatted,
+                        'player_bottom': black_player_formatted,
+                        'time_control': new_game_obj.time_control,
+                        'result_description': new_game_obj.result_description,
+                        'moves_count': new_game_obj.moves_count,
+                        'date': new_game_obj.game_date.strftime("%b %d, %Y"),
+                        'is_user_white': is_user_white,
+                    })
+                    
+                    new_games_saved_count += 1
+
+                    if new_games_saved_count >= limit:
+                        break
+                        
+            if new_games_saved_count > 0:
+                return JsonResponse({
+                    'games': games_list,
+                    'loaded_from': 'api',
+                    'has_more_db_games': True 
+                })
+
+    except requests.exceptions.RequestException as e:
+        print(f"ERROR: API connection failed during Load More: {e}")
+        pass 
+    except Exception as e:
+        print(f"Error during API sync or processing in Load More: {e}")
+        pass
+
+    return JsonResponse({
+        'games': [],
+        'loaded_from': 'none',
+        'has_more_db_games': False
+    })
