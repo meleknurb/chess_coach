@@ -11,4 +11,6 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('dashboard/', views.dashboard, name='dashboard'), 
     path('search_games/', views.search_games, name='search_games'),
+    path('load_more_games/', views.load_more_games, name='load_more_games'),
+
 ]
