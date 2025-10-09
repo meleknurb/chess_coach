@@ -28,7 +28,7 @@
             <h2>Last Games</h2>
         
         <div class="filter-bar">
-            <input type="text" placeholder="Search by Opponent or Date (year-month-day)..." class="search-input">
+            <input type="text" placeholder="Search by Opponent or Date (e.g 2025-09-29)..." class="search-input">
         </div>
         </div>
 
@@ -95,6 +95,20 @@
             </p>
         {% endif %}
     </div>
+    <div class="load-more-controls">
+            <p class="loading-message" style="display: none; text-align: center;">Loading...</p>
+            
+            <button id="load-more-btn" class="btn primary-btn small-btn">
+                <i class="fas fa-redo"></i> Load More Games
+            </button>
+            
+            <button id="collapse-btn" class="btn secondary-btn small-btn" style="display: none;">
+                <i class="fas fa-angle-up"></i> Collapse View
+            </button>
+        </div>
+        {% if not games %}
+        {% endif %}
+    </div>
 </div>
 
 {% block extra_js %}
@@ -102,6 +116,7 @@
 <script>
     const searchGamesUrl = "{% url 'users:search_games' %}";
     const analyzeGameUrl = "{% url 'analysis:analyze_game' %}";
+    const loadMoreGamesUrl = "{% url 'users:load_more_games' %}"; 
 </script>
 <script src="{% static 'js/dashboard.js' %}"></script>
 
