@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from django.contrib.auth import authenticate, update_session_auth_hash 
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, UserUpdateForm, ChessUsernameUpdateForm
+from django.contrib.auth.forms import PasswordChangeForm 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import login as auth_login 
@@ -72,7 +73,73 @@ def profile(request):
 
 @login_required
 def settings(request):
-    return render(request, 'settings.html', {'user': request.user})
+    user = request.user
+
+    email_form = UserUpdateForm(instance=user)
+    password_form = PasswordChangeForm(user)
+    chess_username_form = ChessUsernameUpdateForm(instance=user)
+
+    if request.method == 'POST':
+        
+        if 'update_email' in request.POST:
+            email_form = UserUpdateForm(request.POST, instance=user)
+            if email_form.is_valid():
+                email_form.save()
+                messages.success(request, "Email address successfully updated.")
+                return redirect('users:settings')
+
+        elif 'change_password' in request.POST:
+            password_form = PasswordChangeForm(user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Your password was successfully updated!")
+                return redirect('users:settings')
+        
+
+        elif 'update_chess_username' in request.POST:
+            chess_username_form = ChessUsernameUpdateForm(request.POST, instance=user)
+            
+            if chess_username_form.is_valid():
+                new_username = chess_username_form.cleaned_data.get('username')
+                
+                if new_username is not None:
+                    chess_username_form.save() 
+                    ChessGame.objects.filter(user=request.user).delete()
+                    messages.success(request, f"Chess.com username successfully set to '{new_username}'.")
+                else:
+                    messages.error(request, "Username cannot be empty.")
+                
+                return redirect('users:settings')
+            
+            messages.error(request, "Error: Please check the entered username.")
+            return redirect('users:settings')
+
+
+    context = {
+        'email_form': email_form,
+        'password_form': password_form,
+        'chess_username_form': chess_username_form,
+    }
+    return render(request, 'settings.html', context)
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+ 
+        auth_logout(request)
+        
+        try:
+            user.delete()
+            return redirect('home') 
+            
+        except Exception as e:
+            print(f"Error deleting user {user.username}: {e}")
+            messages.error(None, 'An error occurred while trying to delete the account. Please try again.')
+            return redirect('home') 
+                    
+    return redirect('users:settings')
 
 def get_moves_from_pgn(pgn_text):
     try:
