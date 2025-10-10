@@ -11,25 +11,54 @@
 
 {% block content %}
 <div class="settings-page">
-
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    
     <div class="settings-header">
         <h2>Account Settings</h2>
-        <p>Manage your profile details, password, and preferences.</p>
+        <p>Manage your user profile configuration</p>
     </div>
 
     <div class="settings-section">
-        <h3>Profile Information</h3>
+        <h3>Update Email</h3>
         <form method="POST" class="settings-form">
             {% csrf_token %}
+            
             <div class="form-group">
-                <label>Username</label>
-                <input type="text" name="username" value="{{ user.username }}" disabled>
+                <label for="{{ email_form.email.id_for_label }}">New Email Address</label>
+                {{ email_form.email }}
+                {% if email_form.email.errors %}
+                    <small class="text-danger">{{ email_form.email.errors|striptags }}</small>
+                {% endif %}
             </div>
+            
+            <input type="hidden" name="update_email" value="true">
+            <button type="submit" class="btn-save">Update Email</button>
+        </form>
+    </div>
+
+    <div class="settings-section">
+        <h3>Update Chess.com Username</h3>
+        <p>Keep it updated to sync your stats accurately.</p>
+        <form method="POST" class="settings-form">
+            {% csrf_token %}
+            
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" value="{{ user.email }}">
+                <label for="{{ chess_username_form.chess_username.id_for_label }}">New Chess.com Username</label>
+                {{ chess_username_form.username }}
+                {% if chess_username_form.username.errors %}
+                    <small class="text-danger">{{ chess_username_form.username.errors|striptags }}</small>
+                {% endif %}
             </div>
-            <button type="submit" class="btn-save">Save Changes</button>
+            
+            <input type="hidden" name="update_chess_username" value="true">
+            <button type="submit" class="btn-save">Update Chess Username</button>
         </form>
     </div>
 
@@ -37,19 +66,29 @@
         <h3>Change Password</h3>
         <form method="POST" class="settings-form">
             {% csrf_token %}
-            <div class="form-group">
-                <label>Current Password</label>
-                <input type="password" name="current_password" placeholder="Enter current password">
-            </div>
-            <div class="form-group">
-                <label>New Password</label>
-                <input type="password" name="new_password" placeholder="Enter new password">
-            </div>
-            <div class="form-group">
-                <label>Confirm New Password</label>
-                <input type="password" name="confirm_password" placeholder="Confirm new password">
-            </div>
+            
+            {% for field in password_form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <small class="text-danger">{{ field.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <input type="hidden" name="change_password" value="true">
             <button type="submit" class="btn-save">Update Password</button>
+        </form>
+    </div>
+
+    <div class="settings-section delete-section">
+        <h3>Delete Account</h3>
+        <p class="warning-text">Permanently delete your account and all associated game data. This action cannot be undone.</p>
+        
+        <form method="POST" action="{% url 'users:delete_account' %}" id="deleteAccountForm">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">Delete Account</button>
         </form>
     </div>
 
@@ -58,4 +97,18 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
+    
+    document.body.focus();
+});
+</script>
+
 {% endblock %}
