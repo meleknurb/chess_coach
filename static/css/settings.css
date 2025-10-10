@@ -50,7 +50,7 @@
 .form-group label {
     font-weight: 600;
     color: #333;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .form-group input {
@@ -94,3 +94,35 @@
     color: #005fa3;
 }
 
+
+.delete-section {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 30px;
+    margin-top: 10px; 
+}
+
+.warning-text {
+    color: #666; 
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.btn-delete {
+    background-color: #cc0000;
+    color: white;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-start; 
+}
+
+.btn-delete:hover {
+    background-color: #a30000;
+}
+
+.delete-section form {
+    display: inline-block;
+}
