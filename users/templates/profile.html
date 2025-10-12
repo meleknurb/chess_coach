@@ -1,9 +1,7 @@
-<!-- profile.html -->
-
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Profile | Chess Coach{% endblock %}
+{% block title %}{{ username|capfirst }} Profile | Chess Coach{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/profile.css' %}">
@@ -11,36 +9,109 @@
 
 {% block content %}
 <div class="profile-page">
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="message-{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-    <div class="profile-header">
-        <img src="{% static 'images/default-avatar.png' %}" alt="Profile Picture" class="profile-avatar">
-        <div class="profile-info">
-            <h2>{{ user.username }}</h2>
-            <p class="email">{{ user.email }}</p>
+    <div class="profile-card">
+        <div class="profile-meta">
+            <div class="profile-avatar">
+                <img src="{% static 'images/default_avatar.png' %}" alt="Avatar">
+            </div>
+            <div class="profile-info">
+                <h1>{{ username }}
+                    <span class="country-code">
+                        {% if player_info.country_code %}{{ player_info.country_code }}{% endif %}
+                    </span>
+                </h1>
+                <div class="stats-row">
+                    <span>Joined at <strong>{{ player_info.joined }}</strong></span>
+                    <span class="dot">·</span>
+                    <span><strong>{{ player_info.followers }}</strong> Followers</span>
+                    <span class="dot">·</span>
+                    <span class="online-status status-online"><strong>Online Now</strong></span>
+                </div>
+            </div>
         </div>
+        <a href="{% url 'users:settings' %}" class="btn-edit-profile">Edit Profile</a>
     </div>
 
-    <div class="profile-details">
-        <h3>Account Details</h3>
-        <div class="info-group">
-            <label>Username</label>
-            <span>{{ user.username }}</span>
-        </div>
-        <div class="info-group">
-            <label>Email</label>
-            <span>{{ user.email }}</span>
-        </div>
-        <div class="info-group">
-            <label>Member Since</label>
-            <span>{{ user.date_joined|date:"F j, Y" }}</span>
-        </div>
-    </div>
+    
+    <div class="profile-content-area">
+        
+        <div id="overview-content" class="tab-content active">
+            
+            <div class="ratings-grid-small">
+                
+                {# Bullet #}
+                {% with data=ratings.bullet %}
+                <div class="rating-card-small">
+                    <div class="card-header">
+                        <span class="emoji-icon">🚀</span>
+                        <div class="rating-details">
+                            <span class="rating-title">Bullet</span>
+                            <span class="rating-number">{{ data.rating }} 
+                                <span class="change-indicator {{ data.change_class }}">
+                                    {% if data.change != 0 %}
+                                        {% if data.change > 0 %}↑{% else %}↓{% endif %}
+                                        {{ data.change|default:""|cut:"-" }}
+                                    {% endif %}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
 
-    <div class="profile-actions">
-        <a href="{% url 'users:settings' %}" class="btn-edit">Edit Profile</a>
-        <a href="{% url 'users:logout' %}" class="btn-logout">Logout</a>
-    </div>
+                {# Blitz #}
+                {% with data=ratings.blitz %}
+                <div class="rating-card-small">
+                    <div class="card-header">
+                        <span class="emoji-icon">⚡</span>
+                        <div class="rating-details">
+                            <span class="rating-title">Blitz</span>
+                            <span class="rating-number">{{ data.rating }}
+                                <span class="change-indicator {{ data.change_class }}">
+                                    {% if data.change != 0 %}
+                                        {% if data.change > 0 %}↑{% else %}↓{% endif %}
+                                        {{ data.change|default:""|cut:"-" }}
+                                    {% endif %}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
 
+                {# Rapid #}
+                {% with data=ratings.rapid %}
+                <div class="rating-card-small">
+                    <div class="card-header">
+                        <span class="emoji-icon">⏱️</span>
+                        <div class="rating-details">
+                            <span class="rating-title">Rapid</span>
+                            <span class="rating-number">{{ data.rating }}
+                                <span class="change-indicator {{ data.change_class }}">
+                                    {% if data.change != 0 %}
+                                        {% if data.change > 0 %}↑{% else %}↓{% endif %}
+                                        {{ data.change|default:""|cut:"-" }}
+                                    {% endif %}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+
+            </div>
+            
+        </div>
+        
+    </div>
 </div>
 {% endblock %}
-
