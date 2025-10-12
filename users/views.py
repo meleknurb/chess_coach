@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, update_session_auth_hash 
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, UserUpdateForm, ChessUsernameUpdateForm
+from .models import CustomUser, ChesscomPlayer, PlayerRating
 from django.contrib.auth.forms import PasswordChangeForm 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -14,6 +15,7 @@ from requests.exceptions import RequestException
 import locale
 from analysis.models import ChessGame
 from django.http import JsonResponse
+from django.utils import timezone
 
 
 # Create your views here.
@@ -67,9 +69,160 @@ def logout(request):
     auth_logout(request)
     return redirect('home')
 
+def get_rating_data(stats_data, time_class_key):
+    data = stats_data.get(time_class_key, {})
+    
+    current_rating = 0
+    score_change = 0 
+    
+    last_data = data.get('last', {})
+    current_rating_value = last_data.get('rating')
+    
+    if isinstance(current_rating_value, (int, float)):
+        current_rating = int(current_rating_value)
+
+    prev_rating = last_data.get('prev', 0)
+    if current_rating != 0 and prev_rating != 0:
+        score_change = current_rating - prev_rating
+        
+    record = data.get('record', {})
+    win, loss, draw = record.get('win', 0), record.get('loss', 0), record.get('draw', 0)
+    total = win + loss + draw
+    
+    return {
+        'rating': current_rating,
+        'change': score_change,
+        'total_games': total,
+        'win_count': win, 
+        'loss_count': loss,
+        'draw_count': draw,
+    }
+
+def extract_country_code(country_url):
+    if country_url:
+        return country_url.split('/')[-1].upper()
+    return None 
+
+
+def update_player_data(user):
+    username = user.username.lower()
+    
+    try:
+        # 1. Player Profile Info API Call
+        player_info_url = f'https://api.chess.com/pub/player/{username}'
+        player_info_response = requests.get(player_info_url, headers=API_HEADERS, timeout=5)
+        player_info_response.raise_for_status()
+        player_info = player_info_response.json()
+        
+        # 2. Player Stats API Call
+        stats_url = f'https://api.chess.com/pub/player/{username}/stats'
+        stats_response = requests.get(stats_url, headers=API_HEADERS, timeout=5)
+        stats_response.raise_for_status()
+        stats_data = stats_response.json()
+
+    except requests.exceptions.RequestException as e:
+        print(f"API Connection Error for {username}: {e}")
+        return False 
+    
+    joined_ts = player_info.get('joined', 0)
+    joined_dt = datetime.datetime.fromtimestamp(joined_ts, tz=datetime.timezone.utc) if joined_ts else None
+    
+    player_obj, created = ChesscomPlayer.objects.update_or_create(
+        user=user, 
+        defaults={
+            'username': username,
+            'country_code': extract_country_code(player_info.get('country')),
+            'joined_date': joined_dt,
+            'followers': player_info.get('followers', 0),
+            'last_updated': timezone.now()
+        }
+    )
+    
+    rating_classes = {
+        'bullet': 'chess_bullet',
+        'blitz': 'chess_blitz',
+        'rapid': 'chess_rapid',
+    }
+    
+    for time_class, api_key in rating_classes.items():
+        api_data = get_rating_data(stats_data, api_key)
+        new_rating = api_data['rating']
+        
+        rating_obj, created = PlayerRating.objects.get_or_create(
+            player=player_obj,
+            time_class=time_class,
+            defaults={'rating': new_rating}
+        )
+        
+        if created or rating_obj.rating != new_rating:
+            rating_obj.rating = new_rating
+            rating_obj.rating_change = api_data['change']
+            rating_obj.total_games = api_data['total_games']
+            rating_obj.win_count = api_data['win_count']
+            rating_obj.loss_count = api_data['loss_count']
+            rating_obj.draw_count = api_data['draw_count']
+            rating_obj.last_updated = timezone.now()
+            rating_obj.save()
+            print(f"Rating CHANGE detected for {time_class}. Updated to {new_rating}.")
+        else:
+            print(f"Rating UNCHANGED for {time_class}. Using local DB data.")
+
+        
+    return True
+
+def get_player_context_from_db(user):
+    username = user.username.lower()
+    
+    try:
+        player_obj = ChesscomPlayer.objects.get(user=user)
+    except ChesscomPlayer.DoesNotExist:
+        return None 
+    
+    ratings_db = player_obj.ratings.all()
+    ratings = {}
+    
+    for rating_obj in ratings_db:
+        score_change = rating_obj.rating_change
+        
+        ratings[rating_obj.time_class] = {
+            'rating': str(rating_obj.rating) if rating_obj.rating else 'N/A', 
+            'change': score_change,
+            'change_text': f"{'+' if score_change >= 0 else ''}{score_change}",
+            'change_class': 'up' if score_change > 0 else ('down' if score_change < 0 else 'neutral'),
+        }
+
+    joined_date_str = player_obj.joined_date.strftime("%d %b %Y") if player_obj.joined_date else 'N/A'
+    
+    context = {
+        'username': username,
+        'player_info': {
+            'joined': joined_date_str,
+            'followers': player_obj.followers,
+            'country_code': player_obj.country_code,
+        },
+        'ratings': ratings,
+    }
+    return context
+
 @login_required
 def profile(request):
-    return render(request, 'profile.html', {'user': request.user})
+    user = request.user
+    username = user.username.lower()
+    api_success = update_player_data(user) 
+    context = get_player_context_from_db(user)
+    
+    if context is None:
+        if not api_success:
+             messages.error(request, 'Error: Could not retrieve any player data. Chess.com API may be down, and no previous data was found in the database.')
+        else:
+             messages.error(request, 'Error: Failed to fetch profile information.')
+             
+        context = {'username': username, 'player_info': {'joined': 'N/A', 'followers': 0, 'country_code': None}, 'ratings': {}}
+
+        
+    context['active_tab'] = 'overview'
+
+    return render(request, 'profile.html', context)
 
 @login_required
 def settings(request):
