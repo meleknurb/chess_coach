@@ -124,16 +124,11 @@ def update_player_data(user):
         print(f"API Connection Error for {username}: {e}")
         return False 
     
-    joined_ts = player_info.get('joined', 0)
-    joined_dt = datetime.datetime.fromtimestamp(joined_ts, tz=datetime.timezone.utc) if joined_ts else None
-    
     player_obj, created = ChesscomPlayer.objects.update_or_create(
         user=user, 
         defaults={
             'username': username,
             'country_code': extract_country_code(player_info.get('country')),
-            'joined_date': joined_dt,
-            'followers': player_info.get('followers', 0),
             'last_updated': timezone.now()
         }
     )
@@ -191,13 +186,13 @@ def get_player_context_from_db(user):
             'change_class': 'up' if score_change > 0 else ('down' if score_change < 0 else 'neutral'),
         }
 
-    joined_date_str = player_obj.joined_date.strftime("%d %b %Y") if player_obj.joined_date else 'N/A'
+    app_joined_date_str = user.date_joined.strftime("%d %b %Y") 
     
     context = {
         'username': username,
         'player_info': {
-            'joined': joined_date_str,
-            'followers': player_obj.followers,
+            'joined': app_joined_date_str,
+            'followers': 0,  
             'country_code': player_obj.country_code,
         },
         'ratings': ratings,
