@@ -62,15 +62,6 @@ class ChesscomPlayer(models.Model):
         blank=True,
         verbose_name='Country Code'
     )
-    joined_date = models.DateTimeField(
-        null=True, 
-        blank=True,
-        verbose_name='Joined Date'
-    )
-    followers = models.IntegerField(
-        default=0, 
-        verbose_name='Followers'
-    )
     last_updated = models.DateTimeField(
         default=timezone.now,
         verbose_name='Last Updated'
